@@ -21,16 +21,16 @@
             box-sizing: border-box;
         }
         .box, .button {
-            font-size: 16px; /* Adatta per dispositivi mobili */
-            padding: 15px 20px; /* Più grande per facilitare il tocco */
-            margin: 10px 0; /* Spazio tra i pulsanti */
+            font-size: 16px;
+            padding: 15px 20px;
+            margin: 10px 0;
             border: none;
             border-radius: 5px;
             background-color: #007bff;
             color: white;
             cursor: pointer;
-            display: inline-block; /* Per centrare i pulsanti nel contenitore */
-            width: auto; /* Auto width per adattarsi al testo */
+            display: inline-block;
+            width: auto;
         }
         .box {
             background-color: #ffffff;
@@ -43,7 +43,7 @@
         @media (max-width: 600px) {
             .button, .box {
                 font-size: 14px;
-                padding: 12px 18px; /* Leggermente più piccolo per schermi molto stretti */
+                padding: 12px 18px;
             }
         }
     </style>
@@ -53,12 +53,12 @@
 <div class="container">
     <div class="button" onclick="setEnvironment('Urban')">Urban</div>
     <div class="button" onclick="setEnvironment('Wilderness')">Wilderness</div>
-    <div id="encounter-nature" class="box" style="display: none;">Natura dell'incontro...</div> <!-- Nuovo div qui -->
+    <div id="encounter-nature" class="box" style="display: none;">Natura dell'incontro...</div>
     <div id="outcome" class="box" style="display: none;">Esito...</div>
 </div>
 
 <script>
-   async function fetchFromSheet(range) {
+async function fetchFromSheet(range) {
     const sheetId = '1BxbPEDPJcalOtcWTEYLenB9xCYMqm61xyL8OTQrs2rY';
     const apiKey = 'AIzaSyDw8x-foQghu9M_dwREfKMfmc1XsVMlbF0';
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
@@ -67,9 +67,7 @@
         const response = await fetch(url);
         const data = await response.json();
         if (data.values && data.values.length > 0) {
-            // Sceglie un indice casuale dalla lista di valori ricevuti
             const randomIndex = Math.floor(Math.random() * data.values.length);
-            // Restituisce solo il valore selezionato casualmente dalla colonna
             const selectedText = data.values[randomIndex][0];
             return selectedText;
         } else {
@@ -81,46 +79,24 @@
     }
 }
 
-async function handleEncounter() {
-    const roll = Math.ceil(Math.random() * 6); // Secondo tiro di dado
+async function rollForWilderness() {
+    const roll = Math.ceil(Math.random() * 6);
     let outcomeText = "";
 
     switch (roll) {
         case 1:
-            outcomeText = "Attacca immediatamente.";
-            break;
-        case 2:
-        case 3:
-            outcomeText = "Ostile";
-            break;
-        case 4:
-        case 5:
-            outcomeText = "Neutrale";
-            break;
-        case 6:
-            outcomeText = "Amichevole";
-            break;
-    }
-
-    return outcomeText;
-}
-
-async function rollForWilderness() {
-    const roll = Math.ceil(Math.random() * 6);
-    let encounterNatureText = ""; // Testo per la natura dell'incontro
-    let outcomeText = ""; // Testo per il dettaglio dell'incontro
-
-    switch (roll) {
-        case 1:
-            encounterNatureText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
+            outcomeText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
             break;
         case 2:
         case 3:
         case 4:
             const incontriRange = 'Incontri!A1:A271';
             const incontriText = await fetchFromSheet(incontriRange);
-            encounterNatureText = await handleEncounter(); // Ottiene la natura dell'incontro
-            outcomeText = "Incontrate: " + incontriText; // Imposta il testo dell'incontro
+            const encounterType = await handleEncounter();
+            const encounterDetail = await determineEncounterDetail(encounterType);
+            document.getElementById('outcome').textContent = "Incontrate: " + incontriText;
+            document.getElementById('encounter-nature').textContent = "Mood dell'incontro: " + encounterDetail;
+            document.getElementById('encounter-nature').style.display = 'block';
             break;
         case 5:
             const indiziRange = 'Incontri!A1:A271';
@@ -128,38 +104,68 @@ async function rollForWilderness() {
             outcomeText = "Notate delle tracce che conducono ad " + indiziText;
             break;
         case 6:
-            encounterNatureText = "Non succede nulla";
+            outcomeText = "Non succede nulla";
             break;
     }
 
-    // Aggiorna il contenuto dei div in base agli esiti
-    if(encounterNatureText !== "") {
-        document.getElementById('encounter-nature').textContent = encounterNatureText;
-        document.getElementById('encounter-nature').style.display = 'block';
-    } else {
-        document.getElementById('encounter-nature').style.display = 'none'; // Nasconde se non c'è testo per la natura dell'incontro
+    document.getElementById('outcome').style.display = 'block';
+    document.getElementById('outcome').textContent = outcomeText;
+}
+
+async function handleEncounter() {
+    const roll = Math.ceil(Math.random() * 6);
+    let encounterType = "";
+
+    switch (roll) {
+        case 1:
+            encounterType = "Attacca immediatamente.";
+            break;
+        case 2:
+        case 3:
+            encounterType = "Ostile";
+            break;
+        case 4:
+        case 5:
+            encounterType = "Neutrale";
+            break;
+        case 6:
+            encounterType = "Amichevole";
+            break;
     }
 
-    if(outcomeText !== "") {
-        document.getElementById('outcome').textContent = outcomeText;
-        document.getElementById('outcome').style.display = 'block';
-    } else {
-        document.getElementById('outcome').style.display = 'none'; // Nasconde se non c'è testo per il dettaglio dell'incontro
+    return encounterType;
+}
+
+async function determineEncounterDetail(encounterType) {
+    let detail = "";
+    const roll = Math.ceil(Math.random() * 3); // d3 per il dettaglio specifico
+    
+    if (encounterType === "Ostile") {
+        const ostileDetails = [
+            "Le creature sono aggressive, insultano chiunque incroci il loro cammino e attaccano se si sentono in vantaggio.",
+            "Richiedono cibo o soldi come tributo. Se si sentono in vantaggio, passano all'attacco.",
+            "Si mostrano violenti, e ricattano i PC per lasciarli in pace. Attaccheranno se credono di poter vincere."
+        ];
+        detail = ostileDetails[roll - 1];
     }
+    // Aggiungi qui logica simile per "Neutrale" e "Amichevole" se necessario
+
+    return detail;
 }
 
 async function setEnvironment(choice) {
-    document.getElementById('outcome').style.display = 'none'; // Resetta la visualizzazione dell'esito
+    document.getElementById('outcome').style.display = 'none';
+    document.getElementById('encounter-nature').style.display = 'none'; // Aggiunto per resettare la visualizzazione
+    
     if (choice === 'Urban') {
-        const urbanRange = 'Urban!B1:B271'; // Range completo della colonna B
-        const urbanText = await fetchFromSheet(urbanRange); // Ottiene un singolo valore casuale da quella colonna
+        const urbanRange = 'Urban!B1:B271';
+        const urbanText = await fetchFromSheet(urbanRange);
         document.getElementById('outcome').textContent = urbanText;
         document.getElementById('outcome').style.display = 'block';
     } else if (choice === 'Wilderness') {
-        rollForWilderness();
+        await rollForWilderness();
     }
 }
-
 </script>
 
 </body>
