@@ -87,21 +87,27 @@ async function rollForWilderness() {
     switch (roll) {
         case 1:
             outcomeText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
+            document.getElementById('outcome').textContent = outcomeText;
             break;
         case 2:
         case 3:
         case 4:
-            outcomeText = "Incontro";
+            // Qui viene gestito il caso di "Incontro"
+            const incontriRange = 'Incontri!A1:A271'; // Assicurati che il range sia corretto
+            const incontriText = await fetchFromSheet(incontriRange);
+            outcomeText = "Incontro: " + incontriText; // Concatena il testo dell'incontro selezionato casualmente
+            document.getElementById('outcome').textContent = outcomeText;
             break;
         case 5:
             outcomeText = "Indizi su Incontro";
+            document.getElementById('outcome').textContent = outcomeText;
             break;
         case 6:
             outcomeText = "Non succede nulla";
+            document.getElementById('outcome').textContent = outcomeText;
             break;
     }
 
-    document.getElementById('outcome').textContent = outcomeText;
     document.getElementById('outcome').style.display = 'block';
 }
 
