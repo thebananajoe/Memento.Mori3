@@ -57,7 +57,7 @@
 </div>
 
 <script>
-    async function fetchFromSheet(range) {
+   async function fetchFromSheet(range) {
     const sheetId = '1BxbPEDPJcalOtcWTEYLenB9xCYMqm61xyL8OTQrs2rY';
     const apiKey = 'AIzaSyDw8x-foQghu9M_dwREfKMfmc1XsVMlbF0';
     const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
@@ -66,9 +66,11 @@
         const response = await fetch(url);
         const data = await response.json();
         if (data.values && data.values.length > 0) {
-            // Concatena i valori della colonna B, separati da una virgola o un altro separatore a tua scelta
-            const textList = data.values.map(row => row[0]).join(", ");
-            return textList; // Restituisce il testo concatenato
+            // Sceglie un indice casuale dalla lista di valori ricevuti
+            const randomIndex = Math.floor(Math.random() * data.values.length);
+            // Restituisce solo il valore selezionato casualmente dalla colonna
+            const selectedText = data.values[randomIndex][0];
+            return selectedText;
         } else {
             return 'Nessun dato trovato nella colonna specificata.';
         }
