@@ -68,8 +68,7 @@ async function fetchFromSheet(range) {
         const data = await response.json();
         if (data.values && data.values.length > 0) {
             const randomIndex = Math.floor(Math.random() * data.values.length);
-            const selectedText = data.values[randomIndex][0];
-            return selectedText;
+            return data.values[randomIndex][0];
         } else {
             return 'Nessun dato trovato nella colonna specificata.';
         }
@@ -81,79 +80,61 @@ async function fetchFromSheet(range) {
 
 async function rollForWilderness() {
     const roll = Math.ceil(Math.random() * 6);
-    let outcomeText = "";
+    let incontriText = ""; // Inizializza come stringa vuota
 
     switch (roll) {
         case 1:
-            outcomeText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
+            document.getElementById('outcome').textContent = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
             break;
         case 2:
         case 3:
         case 4:
-    const incontriRange = 'Incontri!A1:A271';
-    const incontriText = await fetchFromSheet(incontriRange); // Ottiene il dettaglio dell'incontro
-    const encounterOutcome = await handleEncounter(); // Ottiene il mood dell'incontro
-    // Imposta il dettaglio dell'incontro nel div 'outcome'
-    document.getElementById('outcome').textContent = "Incontrate: " + incontriText;
-    document.getElementById('outcome').style.display = 'block';
-    // Imposta il mood dell'incontro nel div 'encounter-nature'
-    document.getElementById('encounter-nature').textContent = "Mood dell'incontro: " + encounterOutcome;
-    document.getElementById('encounter-nature').style.display = 'block';
-    break;
+            incontriText = await fetchFromSheet('Incontri!A1:A271');
+            const encounterOutcome = await handleEncounter();
+            document.getElementById('outcome').textContent = "Incontrate: " + incontriText;
+            document.getElementById('encounter-nature').textContent = "Mood dell'incontro: " + encounterOutcome;
+            document.getElementById('encounter-nature').style.display = 'block';
+            break;
         case 5:
-            const indiziRange = 'Incontri!A1:A271';
-            const indiziText = await fetchFromSheet(indiziRange);
-            outcomeText = "Notate delle tracce che conducono ad " + indiziText;
+            incontriText = await fetchFromSheet('Incontri!A1:A271');
+            document.getElementById('outcome').textContent = "Notate delle tracce che conducono ad " + incontriText;
             break;
         case 6:
-            outcomeText = "Non succede nulla";
+            document.getElementById('outcome').textContent = "Non succede nulla";
             break;
     }
 
-    document.getElementById('outcome').textContent = outcomeText;
     document.getElementById('outcome').style.display = 'block';
 }
 
 async function handleEncounter() {
-    const roll = Math.ceil(Math.random() * 6); // Secondo tiro di dado
-    let outcomeText = "";
-
+    const roll = Math.ceil(Math.random() * 6);
     switch (roll) {
         case 1:
-            outcomeText = "Attacca immediatamente.";
-            break;
+            return "Attacca immediatamente.";
         case 2:
         case 3:
-            outcomeText = "Ostile";
-            break;
+            return "Ostile";
         case 4:
         case 5:
-            outcomeText = "Neutrale";
-            break;
+            return "Neutrale";
         case 6:
-            outcomeText = "Amichevole";
-            break;
+            return "Amichevole";
     }
-
-    // Qui puoi decidere se vuoi concatenare questo esito con il testo dell'incontro,
-    // o semplicemente mostrare questo esito.
-    return outcomeText;
 }
-
-
 
 async function setEnvironment(choice) {
     document.getElementById('outcome').style.display = 'none';
-    document.getElementById('encounter-nature').style.display = 'none'; // Aggiunto per resettare la visualizzazione
+    document.getElementById('encounter-nature').style.display = 'none';
     
     if (choice === 'Urban') {
-        const urbanRange = 'Urban!B1:B271';
-        const urbanText = await fetchFromSheet(urbanRange);
+        const urbanText = await fetchFromSheet('Urban!B1:B271');
         document.getElementById('outcome').textContent = urbanText;
-        document.getElementById('outcome').style.display = 'block';
     } else if (choice === 'Wilderness') {
         await rollForWilderness();
     }
+
+    document.getElementById('outcome').style.display = 'block';
 }
 </script>
 
