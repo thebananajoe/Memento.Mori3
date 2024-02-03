@@ -5,19 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scelta dell'Ambiente</title>
     <style>
-        /* Stili CSS omessi per brevità */
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .box, .button {
+            font-size: 16px; /* Adatta per dispositivi mobili */
+            padding: 15px 20px; /* Più grande per facilitare il tocco */
+            margin: 10px 0; /* Spazio tra i pulsanti */
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            display: inline-block; /* Per centrare i pulsanti nel contenitore */
+            width: auto; /* Auto width per adattarsi al testo */
+        }
+        .box {
+            background-color: #ffffff;
+            color: #000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        @media (max-width: 600px) {
+            .button, .box {
+                font-size: 14px;
+                padding: 12px 18px; /* Leggermente più piccolo per schermi molto stretti */
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <button onclick="setEnvironment('Urban')">Urban</button>
-    <button onclick="setEnvironment('Wilderness')">Wilderness</button>
+    <div class="button" onclick="setEnvironment('Urban')">Urban</div>
+    <div class="button" onclick="setEnvironment('Wilderness')">Wilderness</div>
     <div id="outcome" class="box" style="display: none;">Esito...</div>
 </div>
 
 <script>
-async function fetchFromSheet(cell = 'Urban') {
+    async function fetchFromSheet(cell = 'Urban') {
     const sheetId = '1BxbPEDPJcalOtcWTEYLenB9xCYMqm61xyL8OTQrs2rY';
     const apiKey = 'AIzaSyDw8x-foQghu9M_dwREfKMfmc1XsVMlbF0';
     const range = encodeURIComponent(cell); // Assicurati che il nome della cella sia codificato correttamente per l'URL
