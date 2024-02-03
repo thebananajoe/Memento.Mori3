@@ -53,8 +53,8 @@
 <div class="container">
     <div class="button" onclick="setEnvironment('Urban')">Urban</div>
     <div class="button" onclick="setEnvironment('Wilderness')">Wilderness</div>
-    <div id="encounter-nature" class="box" style="display: none;">Natura dell'incontro...</div>
     <div id="outcome" class="box" style="display: none;">Esito...</div>
+    <div id="encounter-nature" class="box" style="display: none;">Natura dell'incontro...</div>
 </div>
 
 <script>
@@ -90,13 +90,11 @@ async function rollForWilderness() {
         case 2:
         case 3:
         case 4:
-            const incontriRange = 'Incontri!A1:A271';
+            // Incontro
+            const incontriRange = 'Incontri!A1:A271'; // Assicurati che il range sia corretto
             const incontriText = await fetchFromSheet(incontriRange);
-            const encounterType = await handleEncounter();
-            const encounterDetail = await determineEncounterDetail(encounterType);
-            document.getElementById('outcome').textContent = "Incontrate: " + incontriText;
-            document.getElementById('encounter-nature').textContent = "Mood dell'incontro: " + encounterDetail;
-            document.getElementById('encounter-nature').style.display = 'block';
+            const encounterOutcome = await handleEncounter(); // Gestisce il secondo tiro di dado per l'incontro
+            outcomeText = encounterOutcome + ": " + incontriText; // Combina gli esiti
             break;
         case 5:
             const indiziRange = 'Incontri!A1:A271';
@@ -108,50 +106,37 @@ async function rollForWilderness() {
             break;
     }
 
-    document.getElementById('outcome').style.display = 'block';
     document.getElementById('outcome').textContent = outcomeText;
+    document.getElementById('outcome').style.display = 'block';
 }
 
 async function handleEncounter() {
-    const roll = Math.ceil(Math.random() * 6);
-    let encounterType = "";
+    const roll = Math.ceil(Math.random() * 6); // Secondo tiro di dado
+    let outcomeText = "";
 
     switch (roll) {
         case 1:
-            encounterType = "Attacca immediatamente.";
+            outcomeText = "Attacca immediatamente.";
             break;
         case 2:
         case 3:
-            encounterType = "Ostile";
+            outcomeText = "Ostile";
             break;
         case 4:
         case 5:
-            encounterType = "Neutrale";
+            outcomeText = "Neutrale";
             break;
         case 6:
-            encounterType = "Amichevole";
+            outcomeText = "Amichevole";
             break;
     }
 
-    return encounterType;
+    // Qui puoi decidere se vuoi concatenare questo esito con il testo dell'incontro,
+    // o semplicemente mostrare questo esito.
+    return outcomeText;
 }
 
-async function determineEncounterDetail(encounterType) {
-    let detail = "";
-    const roll = Math.ceil(Math.random() * 3); // d3 per il dettaglio specifico
-    
-    if (encounterType === "Ostile") {
-        const ostileDetails = [
-            "Le creature sono aggressive, insultano chiunque incroci il loro cammino e attaccano se si sentono in vantaggio.",
-            "Richiedono cibo o soldi come tributo. Se si sentono in vantaggio, passano all'attacco.",
-            "Si mostrano violenti, e ricattano i PC per lasciarli in pace. Attaccheranno se credono di poter vincere."
-        ];
-        detail = ostileDetails[roll - 1];
-    }
-    // Aggiungi qui logica simile per "Neutrale" e "Amichevole" se necessario
 
-    return detail;
-}
 
 async function setEnvironment(choice) {
     document.getElementById('outcome').style.display = 'none';
