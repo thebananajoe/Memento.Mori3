@@ -80,6 +80,30 @@
     }
 }
 
+async function handleEncounter() {
+    const roll = Math.ceil(Math.random() * 6); // Secondo tiro di dado
+    let outcomeText = "";
+
+    switch (roll) {
+        case 1:
+            outcomeText = "Attacca immediatamente.";
+            break;
+        case 2:
+        case 3:
+            outcomeText = "Ostile";
+            break;
+        case 4:
+        case 5:
+            outcomeText = "Neutrale";
+            break;
+        case 6:
+            outcomeText = "Amichevole";
+            break;
+    }
+
+    return outcomeText;
+}
+
 async function rollForWilderness() {
     const roll = Math.ceil(Math.random() * 6);
     let outcomeText = "";
@@ -87,29 +111,27 @@ async function rollForWilderness() {
     switch (roll) {
         case 1:
             outcomeText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
-            document.getElementById('outcome').textContent = outcomeText;
             break;
         case 2:
         case 3:
         case 4:
-            // Qui viene gestito il caso di "Incontro"
+            // Incontro
             const incontriRange = 'Incontri!A1:A271'; // Assicurati che il range sia corretto
             const incontriText = await fetchFromSheet(incontriRange);
-            outcomeText = "Incontrate " + incontriText; // Concatena il testo dell'incontro selezionato casualmente
-            document.getElementById('outcome').textContent = outcomeText;
+            const encounterOutcome = await handleEncounter(); // Gestisce il secondo tiro di dado per l'incontro
+            outcomeText = encounterOutcome + ": " + incontriText; // Combina gli esiti
             break;
-                case 5:
-    console.log("Fetching Indizi Text...");
-    const indiziRange = 'Incontri!A1:A271';
-    fetchFromSheet(indiziRange).then(indiziText => {
-        const outcomeText = "Notate delle tracce che conducono ad " + indiziText;
-        console.log("Indizi Text: ", outcomeText);
-        document.getElementById('outcome').textContent = outcomeText;
-        document.getElementById('outcome').style.display = 'block';
-    }).catch(error => console.error("Error fetching Indizi Text: ", error));
-    break;
+        case 5:
+            const indiziRange = 'Incontri!A1:A271';
+            const indiziText = await fetchFromSheet(indiziRange);
+            outcomeText = "Notate delle tracce che conducono ad " + indiziText;
+            break;
+        case 6:
+            outcomeText = "Non succede nulla";
+            break;
     }
 
+    document.getElementById('outcome').textContent = outcomeText;
     document.getElementById('outcome').style.display = 'block';
 }
 
