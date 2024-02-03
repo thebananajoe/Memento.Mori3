@@ -95,12 +95,14 @@ async function rollForWilderness() {
             // Qui viene gestito il caso di "Incontro"
             const incontriRange = 'Incontri!A1:A271'; // Assicurati che il range sia corretto
             const incontriText = await fetchFromSheet(incontriRange);
-            outcomeText = "Incontro: " + incontriText; // Concatena il testo dell'incontro selezionato casualmente
+            outcomeText = "Incontrate " + incontriText; // Concatena il testo dell'incontro selezionato casualmente
             document.getElementById('outcome').textContent = outcomeText;
             break;
-        case 5:
-            outcomeText = "Indizi su Incontro";
-            document.getElementById('outcome').textContent = outcomeText;
+                case 5:
+            // Indizi su Incontro
+            const indiziRange = 'Incontri!A1:A271'; // Utilizza lo stesso range o uno specifico se necessario
+            const indiziText = await fetchFromSheet(indiziRange);
+            outcomeText = "Notate delle tracce che conducono ad " + indiziText; // Modifica la frase introduttiva
             break;
         case 6:
             outcomeText = "Non succede nulla";
