@@ -53,6 +53,7 @@
 <div class="container">
     <div class="button" onclick="setEnvironment('Urban')">Urban</div>
     <div class="button" onclick="setEnvironment('Wilderness')">Wilderness</div>
+    <div id="encounter-nature" class="box" style="display: none;">Natura dell'incontro...</div> <!-- Nuovo div qui -->
     <div id="outcome" class="box" style="display: none;">Esito...</div>
 </div>
 
@@ -106,20 +107,20 @@ async function handleEncounter() {
 
 async function rollForWilderness() {
     const roll = Math.ceil(Math.random() * 6);
-    let outcomeText = "";
+    let encounterNatureText = ""; // Testo per la natura dell'incontro
+    let outcomeText = ""; // Testo per il dettaglio dell'incontro
 
     switch (roll) {
         case 1:
-            outcomeText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
+            encounterNatureText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
             break;
         case 2:
         case 3:
         case 4:
-            // Incontro
-            const incontriRange = 'Incontri!A1:A271'; // Assicurati che il range sia corretto
+            const incontriRange = 'Incontri!A1:A271';
             const incontriText = await fetchFromSheet(incontriRange);
-            const encounterOutcome = await handleEncounter(); // Gestisce il secondo tiro di dado per l'incontro
-            outcomeText = encounterOutcome + ": " + incontriText; // Combina gli esiti
+            encounterNatureText = await handleEncounter(); // Ottiene la natura dell'incontro
+            outcomeText = "Incontrate: " + incontriText; // Imposta il testo dell'incontro
             break;
         case 5:
             const indiziRange = 'Incontri!A1:A271';
@@ -127,12 +128,24 @@ async function rollForWilderness() {
             outcomeText = "Notate delle tracce che conducono ad " + indiziText;
             break;
         case 6:
-            outcomeText = "Non succede nulla";
+            encounterNatureText = "Non succede nulla";
             break;
     }
 
-    document.getElementById('outcome').textContent = outcomeText;
-    document.getElementById('outcome').style.display = 'block';
+    // Aggiorna il contenuto dei div in base agli esiti
+    if(encounterNatureText !== "") {
+        document.getElementById('encounter-nature').textContent = encounterNatureText;
+        document.getElementById('encounter-nature').style.display = 'block';
+    } else {
+        document.getElementById('encounter-nature').style.display = 'none'; // Nasconde se non c'è testo per la natura dell'incontro
+    }
+
+    if(outcomeText !== "") {
+        document.getElementById('outcome').textContent = outcomeText;
+        document.getElementById('outcome').style.display = 'block';
+    } else {
+        document.getElementById('outcome').style.display = 'none'; // Nasconde se non c'è testo per il dettaglio dell'incontro
+    }
 }
 
 async function setEnvironment(choice) {
