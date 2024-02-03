@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scelta dell'Ambiente</title>
+    <style>
+        /* Stili CSS omessi per brevità */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button onclick="setEnvironment('Urban')">Urban</button>
+    <button onclick="setEnvironment('Wilderness')">Wilderness</button>
+    <div id="outcome" class="box" style="display: none;">Esito...</div>
+</div>
+
+<script>
+async function fetchFromSheet(cell = 'Urban') {
+    const sheetId = '1BxbPEDPJcalOtcWTEYLenB9xCYMqm61xyL8OTQrs2rY';
+    const apiKey = 'AIzaSyDw8x-foQghu9M_dwREfKMfmc1XsVMlbF0';
+    const range = encodeURIComponent(cell); // Assicurati che il nome della cella sia codificato correttamente per l'URL
+    const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${range}?key=${apiKey}`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (data.values && data.values.length > 0) {
+            const selectedText = data.values[0][0]; // Assume the text is in the first cell
+            return selectedText;
+        } else {
+            return 'Nessun dato trovato per Urban.';
+        }
+    } catch(error) {
+        console.error('Errore:', error);
+        return 'Errore nel caricamento dei dati per Urban.';
+    }
+}
+
+async function rollForWilderness() {
+    const roll = Math.ceil(Math.random() * 6);
+    let outcomeText = "";
+
+    switch (roll) {
+        case 1:
+            outcomeText = "I PG si perdono! L'Azione è sprecata O si muovono in un esagono diverso.";
+            break;
+        case 2:
+        case 3:
+        case 4:
+            outcomeText = "Incontro";
+            break;
+        case 5:
+            outcomeText = "Indizi su Incontro";
+            break;
+        case 6:
+            outcomeText = "Non succede nulla";
+            break;
+    }
+
+    document.getElementById('outcome').textContent = outcomeText;
+    document.getElementById('outcome').style.display = 'block';
+}
+
+async function setEnvironment(choice) {
+    if (choice === 'Urban') {
+        const urbanText = await fetchFromSheet('Urban!A1'); // Supponendo che tu voglia la cella A1 dell'area Urban
+        document.getElementById('outcome').textContent = urbanText;
+        document.getElementById('outcome').style.display = 'block';
+    } else if (choice === 'Wilderness') {
+        rollForWilderness();
+    }
+}
+
+</script>
+
+</body>
+</html>
