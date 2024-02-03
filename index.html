@@ -90,12 +90,16 @@ async function rollForWilderness() {
         case 2:
         case 3:
         case 4:
-            // Incontro
-            const incontriRange = 'Incontri!A1:A271'; // Assicurati che il range sia corretto
-            const incontriText = await fetchFromSheet(incontriRange);
-            const encounterOutcome = await handleEncounter(); // Gestisce il secondo tiro di dado per l'incontro
-            outcomeText = encounterOutcome + ": " + incontriText; // Combina gli esiti
-            break;
+    const incontriRange = 'Incontri!A1:A271';
+    const incontriText = await fetchFromSheet(incontriRange); // Ottiene il dettaglio dell'incontro
+    const encounterOutcome = await handleEncounter(); // Ottiene il mood dell'incontro
+    // Imposta il dettaglio dell'incontro nel div 'outcome'
+    document.getElementById('outcome').textContent = "Incontrate: " + incontriText;
+    document.getElementById('outcome').style.display = 'block';
+    // Imposta il mood dell'incontro nel div 'encounter-nature'
+    document.getElementById('encounter-nature').textContent = "Mood dell'incontro: " + encounterOutcome;
+    document.getElementById('encounter-nature').style.display = 'block';
+    break;
         case 5:
             const indiziRange = 'Incontri!A1:A271';
             const indiziText = await fetchFromSheet(indiziRange);
