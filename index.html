@@ -109,19 +109,44 @@ async function rollForWilderness() {
 
 async function handleEncounter() {
     const roll = Math.ceil(Math.random() * 6);
+    let mood = "";
+    let detail = "";
+
     switch (roll) {
         case 1:
-            return "Attacca immediatamente.";
+            mood = "Attacca immediatamente.";
+            break;
         case 2:
         case 3:
-            return "Ostile";
+            mood = "Ostile";
+            detail = await getMoodDetail(mood); // Ottieni il dettaglio specifico per "Ostile"
+            break;
         case 4:
         case 5:
-            return "Neutrale";
+            mood = "Si può negoziare";
+            detail = await getMoodDetail(mood); // Ottieni il dettaglio specifico per "Si può negoziare"
+            break;
         case 6:
-            return "Amichevole";
+            mood = "Amichevole";
+            detail = await getMoodDetail(mood); // Ottieni il dettaglio specifico per "Amichevole"
+            break;
     }
+
+    return mood + (detail ? ": " + detail : ""); // Concatena il mood con il suo dettaglio
 }
+
+// Funzione per ottenere il dettaglio specifico basato sul mood
+async function getMoodDetail(mood) {
+    const roll = Math.ceil(Math.random() * 3); // Tiro di dado d3 per la sotto-opzione
+    const details = {
+        "Ostile": ["Ostile feroce", "Ostile casuale", "Ostile brutto"],
+        "Si può negoziare": ["Negoziazione cauta", "Negoziazione equa", "Negoziazione vantaggiosa"],
+        "Amichevole": ["Amichevole curioso", "Amichevole disponibile", "Amichevole generoso"]
+    };
+
+    return details[mood][roll - 1]; // Seleziona una sotto-opzione basata sul tiro di dado
+}
+
 
 async function setEnvironment(choice) {
     document.getElementById('outcome').style.display = 'none';
