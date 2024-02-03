@@ -92,7 +92,7 @@ async function rollForWilderness() {
             incontriText = await fetchFromSheet('Incontri!A1:A271');
             const encounterOutcome = await handleEncounter();
             document.getElementById('outcome').textContent = "Incontrate: " + incontriText;
-            document.getElementById('encounter-nature').textContent = "Mood dell'incontro: " + encounterOutcome;
+            document.getElementById('encounter-nature').textContent = encounterOutcome;
             document.getElementById('encounter-nature').style.display = 'block';
             break;
         case 5:
