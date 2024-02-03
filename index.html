@@ -99,15 +99,15 @@ async function rollForWilderness() {
             document.getElementById('outcome').textContent = outcomeText;
             break;
                 case 5:
-            // Indizi su Incontro
-            const indiziRange = 'Incontri!A1:A271'; // Utilizza lo stesso range o uno specifico se necessario
-            const indiziText = await fetchFromSheet(indiziRange);
-            outcomeText = "Notate delle tracce che conducono ad " + indiziText; // Modifica la frase introduttiva
-            break;
-        case 6:
-            outcomeText = "Non succede nulla";
-            document.getElementById('outcome').textContent = outcomeText;
-            break;
+    console.log("Fetching Indizi Text...");
+    const indiziRange = 'Incontri!A1:A271';
+    fetchFromSheet(indiziRange).then(indiziText => {
+        const outcomeText = "Notate delle tracce che conducono ad " + indiziText;
+        console.log("Indizi Text: ", outcomeText);
+        document.getElementById('outcome').textContent = outcomeText;
+        document.getElementById('outcome').style.display = 'block';
+    }).catch(error => console.error("Error fetching Indizi Text: ", error));
+    break;
     }
 
     document.getElementById('outcome').style.display = 'block';
